@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Page Spotlight Effect</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    h2 {
+      margin-top: 20px;
+    }
+    p {
+      margin-bottom: 20px;
+    }
+    img {
+      max-width: 80%;
+      border: 2px solid #ccc;
+      margin: 20px auto;
+      display: block;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none; 
+    }
+  </style>
+</head>
+<body>
+  <h2>Spotlight Cursor Effect for Entire Page</h2>
+  <p>Move your cursor anywhere on the page. Scroll to resize spotlight, press "R" to reset.</p>
+  
+  <img src="background-image-1.jpeg" alt="Sample Image">
+  
+
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let spotlightRadius = 120; 
+    const defaultRadius = 120;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function drawSpotlight(x, y) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, spotlightRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      drawSpotlight(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('wheel', (e) => {
+      if (e.deltaY < 0) {
+        spotlightRadius += 15; 
+      } else {
+        spotlightRadius = Math.max(30, spotlightRadius - 15); 
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'r') {
+        spotlightRadius = defaultRadius;
+      }
+    });
+  </script>
+</body>
+</html>

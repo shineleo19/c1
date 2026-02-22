@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Keyword Search & Highlight</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .highlight1 { background-color: yellow; }
+    .highlight2 { background-color: lightgreen; }
+    .highlight3 { background-color: lightblue; }
+    .highlight4 { background-color: pink; }
+    .highlight5 { background-color: orange; }
+    .results {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Keyword Search & Highlight</h2>
+  
+  <p><strong>Sentence:</strong></p>
+  <div id="sentence">
+    This is India Skills 2025-2026 South Regionals Competition. In this task, you are expected to highlight the text by matching with the user input. Add different colors to the different words. #BanengeBharatKeSkillChampion
+  </div>
+  
+  <label>Enter keywords (comma separated):</label><br>
+  <input type="text" id="keywords" style="width:100%"><br><br>
+  
+  <button onclick="searchKeywords()">Search</button>
+  <button onclick="clearAll()">Clear</button>
+  
+  <div id="output"></div>
+  <div id="stats" class="results"></div>
+  
+  <script>
+    function searchKeywords() {
+      let sentenceDiv = document.getElementById("sentence").innerText;
+      let keywords = document.getElementById("keywords").value.split(",").map(k => k.trim()).filter(k => k !== "");
+      
+      if (keywords.length === 0) {
+        alert("Please enter keywords.");
+        return;
+      }
+      
+      let colors = ["highlight1","highlight2","highlight3","highlight4","highlight5"];
+      let totalMatches = 0;
+      let highlightedSentence = sentenceDiv;
+      let keywordCounts = [];
+      
+      keywords.forEach((word, index) => {
+        let regex = new RegExp(`(${word})`, "gi");
+        let count = (highlightedSentence.match(regex) || []).length;
+        totalMatches += count;
+        keywordCounts.push({word, count});
+        highlightedSentence = highlightedSentence.replace(regex, `<span class="${colors[index % colors.length]}">$1</span>`);
+      });
+      
+      document.getElementById("output").innerHTML = highlightedSentence;
+      
+      let statsHtml = "Total Keywords: " + keywords.length + "<br>" +
+                      "Total Matches Found: " + totalMatches + "<br><br>";
+      keywordCounts.forEach((kc, i) => {
+        statsHtml += `<span class="${colors[i % colors.length]}">${kc.word}</span>: ${kc.count} matches<br>`;
+      });
+      
+      document.getElementById("stats").innerHTML = statsHtml;
+    }
+    
+    function clearAll() {
+      document.getElementById("keywords").value = "";
+      document.getElementById("output").innerHTML = "";
+      document.getElementById("stats").innerHTML = "";
+    }
+  </script>
+</body>
+</html>

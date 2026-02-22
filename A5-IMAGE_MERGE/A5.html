@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Merge Images</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      max-width: 80%;
+    }
+    input {
+      margin: 10px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Merge Two Images</h2>
+  <p>Select background image first, then foreground image:</p>
+  
+  <input type="file" id="bgInput" accept="image/*">
+  <input type="file" id="fgInput" accept="image/*">
+  
+  <canvas id="canvas"></canvas>
+  
+  <br>
+  <button id="downloadBtn">Download Merged Image</button>
+
+  <script>
+    const bgInput = document.getElementById('bgInput');
+    const fgInput = document.getElementById('fgInput');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let bgImg = null;
+    let fgImg = null;
+
+    function loadImage(file, callback) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          callback(img);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    bgInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        loadImage(this.files[0], function(img) {
+          bgImg = img;
+          drawImages();
+        });
+      }
+    });
+
+    fgInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        loadImage(this.files[0], function(img) {
+          fgImg = img;
+          drawImages();
+        });
+      }
+    });
+
+    function drawImages() {
+      if (!bgImg) return;
+      canvas.width = bgImg.width;
+      canvas.height = bgImg.height;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.drawImage(bgImg, 0, 0);
+
+      if (fgImg) {
+        const scale = 1; 
+        const fgWidth = fgImg.width * scale;
+        const fgHeight = fgImg.height * scale;
+        const x = (canvas.width - fgWidth) / 2; 
+        const y = (canvas.height - fgHeight) / 2; 
+
+        ctx.globalAlpha = 0.7; 
+        ctx.drawImage(fgImg, x, y, fgWidth, fgHeight);
+        ctx.globalAlpha = 1.0; 
+      }
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+      const link = document.createElement('a');
+      link.download = 'merged-image.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>
